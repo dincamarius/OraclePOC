@@ -1,0 +1,45 @@
+DECLARE
+v_adm_user VARCHAR2(30 CHAR) := 'SABDADM';
+createTbl VARCHAR(4000 CHAR);
+wrongUser EXCEPTION;
+tbl_exist EXCEPTION;
+
+PRAGMA EXCEPTION_INIT(tbl_exist, -955);
+
+BEGIN
+  IF USER = v_adm_user THEN
+
+    createTbl := 'CREATE TABLE DIM_DATE (
+      YEAR_MONTH_DAY VARCHAR2(8 CHAR),
+      DATE_DT DATE,
+      YEAR_MONTH_NBR NUMBER,
+      YEAR_NUMBER NUMBER,
+      MONTH_NUMBER NUMBER CHECK (MONTH_NUMBER BETWEEN 01 AND 12),
+      DAY_NUMBER NUMBER CHECK (DAY_NUMBER BETWEEN 01 AND 31),
+      WEEK_DAY_NAME VARCHAR2(10 CHAR),
+      IS_BSNS_DATE VARCHAR2(1) CHECK (IS_BSNS_DATE IN (''Y'',''N'')),
+      CONSTRAINT DIM_DATE_PK PRIMARY KEY(YEAR_MONTH_DAY)
+    )';
+
+    EXECUTE IMMEDIATE createTbl;
+    dbms_output.put_line('Table DIM_DATE created');
+
+  ELSE
+    RAISE wrongUser;
+  END IF;
+
+EXCEPTION
+    WHEN wrongUser THEN
+    dbms_output.put_line('ERROR: Connected user is not '||v_adm_user);
+
+    WHEN tbl_exist THEN
+      dbms_output.put_line('ERROR: Table already exist');
+
+    WHEN OTHERS THEN
+     dbms_output.put_line('ERROR: Unexpected error occurred...');
+     dbms_output.put_line(substr(DBMS_UTILITY.format_error_stack,1,2000));
+
+END;
+/
+
+

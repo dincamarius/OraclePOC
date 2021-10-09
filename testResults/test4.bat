@@ -1,0 +1,1 @@
+sqlplus -s / as sysdba @test4.sql
